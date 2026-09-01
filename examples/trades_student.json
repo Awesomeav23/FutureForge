@@ -1,0 +1,10 @@
+{
+  "name": "Diego Ramos",
+  "grade": "12",
+  "interests": ["building", "machines", "outdoors"],
+  "subjects": ["shop_tech", "math", "physics"],
+  "work_style": ["hands_on", "independent", "outdoors_env"],
+  "values": ["short_training", "making_things", "entrepreneurship", "high_pay"],
+  "max_education_years": 1,
+  "salary_priority": 4
+}

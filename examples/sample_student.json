@@ -1,0 +1,10 @@
+{
+  "name": "Maya Chen",
+  "grade": "11",
+  "interests": ["health", "helping_people", "science"],
+  "subjects": ["biology", "chemistry", "psychology"],
+  "work_style": ["team", "hands_on", "fast_paced"],
+  "values": ["helping_others", "job_security", "stay_local"],
+  "max_education_years": 4,
+  "salary_priority": 3
+}
