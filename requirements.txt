@@ -1,0 +1,4 @@
+# Core engine + GUI need nothing outside the standard library (tkinter ships with Python).
+# These are optional:
+openai>=1.0.0    # AI-written guidance; without it the app runs in offline template mode
+pytest>=7.0      # test suite
