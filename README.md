@@ -12,38 +12,49 @@ Built as a Tkinter desktop app so it can be handed to a non-technical student an
 demoed on any machine with Python — no server, no browser, no account. Questions
 come one at a time and are answered in the student's own words, not by ticking boxes.
 
-![The wizard, one question at a time](docs/img/wizard-question.png)
+![The wizard: four questions, then ranked matches](docs/img/wizard-demo.gif)
 
-Answers are typed in the student's own words; the chips underneath show the tags the
-matcher actually picked up, live as they type.
+Answers are typed in the student's own words — the chips resolve as they type, so
+"i play piano and like helping people" becomes *Music, acting & performing* and
+*Helping people directly*. Each of the four inputs owns a colour that follows it
+through the whole app: its step pill, its heading, its chips, and its weight on the
+results screen.
 
 ![Ranked matches with the score broken out](docs/img/wizard-results.png)
 
-Each of the four inputs owns a colour that follows it through the whole app —
-its step pill, its heading, its chips, and its weight on the results screen.
-
 
 ## Quick start
+
+No dependencies, no API key, no network — the engine and both interfaces are pure
+standard library.
 
 ```bash
 git clone https://github.com/Awesomeav23/FutureForge.git
 cd FutureForge
 
-python3 main.py                 # launch the desktop app
+# runs anywhere Python does -- full ranked output in the terminal:
+python3 -m futureforge.cli --profile examples/sample_student.json --top 5
+
+# the desktop app:
+python3 main.py
 ```
 
-That's it — the matching engine and GUI are pure standard library. Optional extras:
+Optional extras: `pip install -r requirements.txt` (openai for AI-written guidance,
+pytest for the suite).
+
+<details>
+<summary><b>macOS: the desktop app needs a modern Tk</b> (the CLI above does not)</summary>
+
+Homebrew's Python ships no `_tkinter` at all, and Apple's `/usr/bin/python3` links
+Tk 8.5.9 (2010), which opens a window but renders nothing on recent macOS. Install the
+python.org build of 3.13 (bundles Tk 8.6) or `brew install python-tk@3.13`. Check with:
 
 ```bash
-pip install -r requirements.txt   # openai (AI guidance) + pytest (tests)
+python3 -c "import tkinter; print(tkinter.Tk().tk.call('info','patchlevel'))"
 ```
 
-> **macOS note:** you need a Python with a modern Tk. Homebrew's Python ships no
-> `_tkinter` at all, and Apple's `/usr/bin/python3` links Tk 8.5.9 (2010), which
-> opens a window but renders nothing on recent macOS. Install the python.org build
-> of 3.13 (bundles Tk 8.6) or `brew install python-tk@3.13`. Check with:
-> `python3 -c "import tkinter; print(tkinter.Tk().tk.call('info','patchlevel'))"` —
-> anything below 8.6 will not draw.
+Anything below 8.6 will not draw.
+</details>
 
 ## The four weighted inputs
 
@@ -175,7 +186,7 @@ futureforge/
   cli.py                 terminal questionnaire + scripted runs
 data/careers.json        508 careers with salary ranges and degree requirements
 scripts/batch_demo.py    cohort simulation + coverage report
-docs/img/                screenshots used in this README
+docs/img/                demo GIF + screenshots used in this README
 examples/                sample student profiles
 tests/                   pytest suite
 ```
