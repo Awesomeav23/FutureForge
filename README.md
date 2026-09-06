@@ -42,6 +42,11 @@ python3 main.py
 Optional extras: `pip install -r requirements.txt` (openai for AI-written guidance,
 pytest for the suite).
 
+New to Python, or want every step spelled out? See
+**[docs/GETTING-STARTED.md](docs/GETTING-STARTED.md)** for a plain-English walkthrough
+covering both interfaces, what each command should print, and how to fix the common
+errors.
+
 <details>
 <summary><b>macOS: the desktop app needs a modern Tk</b> (the CLI above does not)</summary>
 
@@ -186,35 +191,11 @@ futureforge/
   cli.py                 terminal questionnaire + scripted runs
 data/careers.json        508 careers with salary ranges and degree requirements
 scripts/batch_demo.py    cohort simulation + coverage report
+docs/GETTING-STARTED.md  step-by-step guide to running it
 docs/img/                demo GIF + screenshots used in this README
 examples/                sample student profiles
 tests/                   pytest suite
 ```
-
-## Where this goes next
-
-Nothing in the engine knows about the GUI. None of `matching.py`, `dataset.py`,
-`models.py`, `recommender.py`, `report.py` or `textmatch.py` imports tkinter; they
-depend only on the standard library and on each other, and `report.to_json()` already
-serialises a full result. The Tk wizard and the CLI are both just consumers.
-
-That makes a web version a wrapper rather than a rewrite. The planned shape:
-
-| Endpoint | Backed by |
-|----------|-----------|
-| `GET /careers`, `GET /fields` | `dataset.load_careers()` |
-| `POST /recommend` | `Recommender.recommend()`, returned as `report.to_json()` |
-| `POST /extract` | `textmatch.extract()`, so a browser can show tags resolving as the user types |
-
-No database is required: the catalogue is a static JSON file and there is no user state
-to persist. Two things do change, and both are deliberate trade-offs rather than free
-wins. The OpenAI key moves server-side, which is an improvement, since one key can serve
-every visitor instead of each user supplying their own. But answers begin leaving the
-device, where today nothing is transmitted at all without a key, so the "no server, no
-browser, no account" claim at the top would need rewriting rather than copying across.
-
-**None of this is built yet.** What exists today is the desktop app and the CLI described
-above.
 
 ## Limitations
 
