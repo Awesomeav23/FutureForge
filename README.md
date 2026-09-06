@@ -1,5 +1,9 @@
 # FutureForge
 
+[![CI](https://github.com/Awesomeav23/FutureForge/actions/workflows/ci.yml/badge.svg)](https://github.com/Awesomeav23/FutureForge/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/downloads/)
+
 A Python career guidance application for high school students. Answer four questions,
 get careers ranked to fit you — each with a real pay range, exactly how much school it
 takes, and a plain-language explanation of *why* it matched your answers.
@@ -8,28 +12,12 @@ Built as a Tkinter desktop app so it can be handed to a non-technical student an
 demoed on any machine with Python — no server, no browser, no account. Questions
 come one at a time and are answered in the student's own words, not by ticking boxes.
 
-```
- ┌──────────────────────────────────────────────────────────────┐
- │ FutureForge                              Question 1 of 4     │
- │ ████████████  ░░░░░░░░░░░░  ░░░░░░░░░░░░  ░░░░░░░░░░░░       │
- │ What you enjoy  School subjects  Work style  What matters    │
- │                                                              │
- │  WHAT YOU ENJOY                                              │
- │                                                              │
- │  What do you actually enjoy?                                 │
- │  Hobbies, subjects, anything you lose track of time doing.   │
- │                                                              │
- │  ┌────────────────────────────────────────────────────────┐  │
- │  │ i play piano and like helping people                   │  │
- │  └────────────────────────────────────────────────────────┘  │
- │  e.g. Computers & technology, Building & fixing things       │
- │                                                              │
- │  PICKED UP                                                   │
- │  [ Music, acting & performing ] [ Helping people directly ]  │
- │                                                              │
- │  ←  Back                                        Continue  →  │
- └──────────────────────────────────────────────────────────────┘
-```
+![The wizard, one question at a time](docs/img/wizard-question.png)
+
+Answers are typed in the student's own words; the chips underneath show the tags the
+matcher actually picked up, live as they type.
+
+![Ranked matches with the score broken out](docs/img/wizard-results.png)
 
 Each of the four inputs owns a colour that follows it through the whole app —
 its step pill, its heading, its chips, and its weight on the results screen.
@@ -139,7 +127,10 @@ python3 -m futureforge.cli --list-fields                      # what's in the da
 ## Batch runs
 
 Reproducible cohort simulation — useful for checking that the engine covers the dataset
-instead of funneling every student into the same five jobs:
+instead of funneling every student into the same five jobs. Students are built from twelve
+archetypes spanning the dataset and then jittered, because sampling tags independently
+invents people who like animals, study art and want quiet focus — a cohort of those measures
+noise, not the engine:
 
 ```bash
 python3 scripts/batch_demo.py --profiles 100 --top 5
@@ -149,13 +140,18 @@ python3 scripts/batch_demo.py --profiles 100 --top 5
 Students simulated:        100
 Recommendations produced:  500
 Careers in dataset:        508 across 136 fields
-Distinct careers surfaced: 73 (96% of the dataset)
+Distinct careers surfaced: 177 (35% of the dataset)
+Fields surfaced:           80 of 136
 ```
+
+Coverage is bounded by the cohort: 100 students × top 5 is 500 slots for 508 careers, so
+35% is close to the practical ceiling. It rises to 49% at 300 students and 57% at 600.
+
 
 ## Tests
 
 ```bash
-pytest -q     # 23 tests, no network required
+pytest -q     # 34 tests, no network required
 ```
 
 The suite covers dataset integrity (vocabulary, salary ordering, unique ids), the scoring
@@ -176,10 +172,10 @@ futureforge/
   report.py              text / markdown / JSON report formatting
   textmatch.py           free-text answers -> tag vocabulary (3-tier matching)
   wizard.py              the colour-coded one-question-at-a-time GUI
-  gui.py                 the earlier all-on-one-screen GUI (still works)
   cli.py                 terminal questionnaire + scripted runs
 data/careers.json        508 careers with salary ranges and degree requirements
 scripts/batch_demo.py    cohort simulation + coverage report
+docs/img/                screenshots used in this README
 examples/                sample student profiles
 tests/                   pytest suite
 ```
@@ -190,3 +186,7 @@ tests/                   pytest suite
 - The dataset is US-centric, and education paths differ by state and country.
 - Matching reflects the tags a person assigned to each career; it is a conversation starter for
   a student and a counselor, not a verdict.
+
+## Licence
+
+MIT — see [LICENSE](LICENSE).
