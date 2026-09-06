@@ -1,91 +1,91 @@
-  name: CI
+name: CI
 
-  on:
-    push:
-      branches: [main]
-    pull_request:
-    workflow_dispatch:
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
 
-  jobs:
-    tests:
-      name: tests (py${{ matrix.python }})
-      runs-on: ubuntu-latest
-      strategy:
-        fail-fast: false
-        matrix:
-          python: ["3.9", "3.10", "3.11", "3.12", "3.13"]
-      steps:
-        - uses: actions/checkout@v4
+jobs:
+  tests:
+    name: tests (py${{ matrix.python }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
 
-    - uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-    # The engine imports with no display, so these run on a bare runner.
-    # The GUI smoke tests skip themselves here and get their own job below.
-    - name: Run test suite
-      run: python -m pytest tests/ -q
-    dataset:
-      name: dataset integrity
-      runs-on: ubuntu-latest
+      # The engine imports with no display, so these run on a bare runner.
+      # The GUI smoke tests skip themselves here and get their own job below.
+      - name: Run test suite
+        run: python -m pytest tests/ -q
+
+  dataset:
     name: dataset integrity
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-  - uses: actions/setup-python@v5
-    with:
-      python-version: "3.13"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
 
-  # No dependencies needed -- the validator and the loader are pure stdlib.
-  - name: Validate careers.json
-    run: python scripts/validate_dataset.py
+      # No dependencies needed -- the validator and the loader are pure stdlib.
+      - name: Validate careers.json
+        run: python scripts/validate_dataset.py
+
   gui:
     name: GUI smoke (xvfb)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-  - uses: actions/setup-python@v5
-    with:
-      python-version: "3.13"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
 
-  # Tkinter needs a display to construct a window, and runners are headless,
-  # so xvfb provides a virtual one. python3-tk is the Tk binding itself.
-  - name: Install Tk and xvfb
-    run: |
-      sudo apt-get update
-      sudo apt-get install -y python3-tk xvfb
+      # Tkinter needs a display to construct a window, and runners are headless,
+      # so xvfb provides a virtual one. python3-tk is the Tk binding itself.
+      - name: Install Tk and xvfb
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-tk xvfb
 
-  - name: Install dependencies
-    run: |
-      python -m pip install --upgrade pip
-      pip install -r requirements.txt
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-  # The smoke tests skip themselves when Tk is unavailable, so assert it works
-  # first -- otherwise a broken Tk here would look like a passing job.
-  - name: Verify Tk is actually available
-    run: |
-      xvfb-run -a python -c "
-      import tkinter
-      root = tkinter.Tk()
-      print('Tk', root.tk.call('info', 'patchlevel'))
-      root.destroy()
-      "
+      # The smoke tests skip themselves when Tk is unavailable, so assert it works
+      # first -- otherwise a broken Tk here would look like a passing job.
+      - name: Verify Tk is actually available
+        run: |
+          xvfb-run -a python -c "
+          import tkinter
+          root = tkinter.Tk()
+          print('Tk', root.tk.call('info', 'patchlevel'))
+          root.destroy()
+          "
 
-  - name: Run GUI smoke tests
-    run: xvfb-run -a python -m pytest tests/test_wizard_smoke.py -q --no-header -rs
+      - name: Run GUI smoke tests
+        run: xvfb-run -a python -m pytest tests/test_wizard_smoke.py -q --no-header -rs
 
-  # Belt and braces: a silent skip would make this job meaningless.
-  - name: Fail if the GUI tests were skipped
-    run: |
-      xvfb-run -a python -m pytest tests/test_wizard_smoke.py -q 2>&1 | tee out.txt
-      if grep -q "skipped" out.txt; then
-        echo "::error::GUI smoke tests were skipped -- Tk/xvfb not working"
-        exit 1
-      fi
+      # Belt and braces: a silent skip would make this job meaningless.
+      - name: Fail if the GUI tests were skipped
+        run: |
+          xvfb-run -a python -m pytest tests/test_wizard_smoke.py -q 2>&1 | tee out.txt
+          if grep -q "skipped" out.txt; then
+            echo "::error::GUI smoke tests were skipped -- Tk/xvfb not working"
+            exit 1
+          fi
